@@ -10,12 +10,13 @@ let
   # We need a copy of the Nix expressions for Nixpkgs and NixOS on the
   # CD.  These are installed into the "nixos" channel of the root
   # user, as expected by nixos-rebuild/nixos-install.
+
   channelSources = pkgs.runCommand "nixos-${config.system.nixosVersion}"
     { expr = builtins.readFile ../../../lib/channel-expr.nix; }
     ''
-      mkdir -p $out/nixos
-      cp -prd ${cleanSource ../../..} $out/nixos/nixos
-      cp -prd ${cleanSource <nixpkgs>} $out/nixos/nixpkgs
+      mkdir -p $out/nixos/nixos $out/nixos/nixpkgs
+      cp -prd ${cleanSource /nix/src/nixos}  $out/nixos/nixos/
+      cp -prd ${cleanSource /nix/src/nixpkgs} $out/nixos/nixpkgs/
       chmod -R u+w $out/nixos/nixos
       echo -n ${config.system.nixosVersion} > $out/nixos/nixos/.version
       echo -n "" > $out/nixos/nixos/.version-suffix
