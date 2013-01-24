@@ -224,6 +224,7 @@ let
 
           [Service]
           Environment=PATH=${def.path}
+          Environment=LD_LIBRARY_PATH=
           ${let env = cfg.globalEnvironment // def.environment;
             in concatMapStrings (n: "Environment=${n}=${getAttr n env}\n") (attrNames env)}
           ${optionalString (!def.restartIfChanged) "X-RestartIfChanged=false"}
@@ -330,7 +331,9 @@ let
 
       ln -s rescue.target $out/kbrequest.target
 
-      #ln -s ../getty@tty1.service $out/multi-user.target.wants/
+      mkdir -p $out/getty.target.wants/
+      ln -s ../getty@tty1.service $out/getty.target.wants/
+
       ln -s ../local-fs.target ../remote-fs.target ../network.target ../nss-lookup.target \
             ../nss-user-lookup.target ../swap.target $out/multi-user.target.wants/
     ''; # */

@@ -1,5 +1,5 @@
-{ nixosSrc ? {outPath = ./.; revCount = 1234; shortRev = "abcdef"; }
-, nixpkgs ? {outPath = <nixpkgs>; revCount = 5678; shortRev = "fedcba"; }
+{ nixosSrc ? {outPath = ./.; revCount = 1234; shortRev = "abcdefg"; }
+, nixpkgs ? {outPath = <nixpkgs>; revCount = 5678; shortRev = "gfedcba"; }
 #, minimal ? false
 }:
 
@@ -142,7 +142,10 @@ let
         pkgs = import <nixpkgs> {};
         options =
           (import lib/eval-config.nix {
-            modules = [ { fileSystems = []; } ];
+            modules = [
+              { fileSystems = [];
+                boot.loader.grub.device = "/dev/sda";
+              } ];
           }).options;
         revision = toString nixosSrc.rev;
       }).manual;
