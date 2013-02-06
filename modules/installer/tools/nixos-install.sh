@@ -119,7 +119,7 @@ if test -n "$build_users_group"; then
 fi
 binary_caches=$(@perl@/bin/perl -e 'use Nix::Config; Nix::Config::readConfig; print $Nix::Config::config{"binary-caches"};')
 if test -n "$binary_caches"; then
-    echo "binary-caches $binary_caches" >> $mountPoint/tmp/nix.conf
+    echo "binary-caches = $binary_caches" >> $mountPoint/tmp/nix.conf
 fi
 export NIX_CONF_DIR=/tmp
 
@@ -159,8 +159,8 @@ done
 
 
 # Get the absolute path to the NixOS/Nixpkgs sources.
-nixpkgs_src=$(nix-instantiate --find-file nixpkgs)
-nixos_src=$(nix-instantiate --find-file nixos)
+nixpkgs_src=$(readlink -f $(nix-instantiate --find-file nixpkgs))
+nixos_src=$(readlink -f $(nix-instantiate --find-file nixos))
 
 
 # Build the specified Nix expression in the target store and install
