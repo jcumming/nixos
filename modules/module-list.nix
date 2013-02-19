@@ -133,6 +133,7 @@
   ./services/networking/hostapd.nix
   ./services/networking/ifplugd.nix
   ./services/networking/ircd-hybrid/default.nix
+  ./services/networking/minidlna.nix
   ./services/networking/nat.nix
   ./services/networking/networkmanager.nix
   ./services/networking/ntpd.nix
@@ -153,6 +154,7 @@
   ./services/networking/unbound.nix
   ./services/networking/vsftpd.nix
   ./services/networking/wakeonlan.nix
+  ./services/networking/websockify.nix
   ./services/networking/wicd.nix
   ./services/networking/wpa_supplicant.nix
   ./services/networking/xinetd.nix
