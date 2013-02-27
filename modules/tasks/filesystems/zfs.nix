@@ -61,6 +61,17 @@ in
         '';
     };
 
+    systemd.services."zpool-import"
+    { description = "Import zpools";
+      after = [ "systemd-udev-settle.service" ];
+      wantedBy = [ "multi-user.target" ]; 
+      serviceConfig =
+      { Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${kernel.zfs}/sbin/zpool import -f -a -d /dev";
+      };
+    };
+
     system.fsPackages = [ kernel.zfs ];                  # XXX: needed? zfs doesn't have a fsck
     environment.systemPackages = [ kernel.zfs ];
     services.udev.packages = [ kernel.zfs ];             # to hook zvol naming, etc. 
