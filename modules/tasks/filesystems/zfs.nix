@@ -61,14 +61,25 @@ in
         '';
     };
 
-    systemd.services."zpool-import" = 
+    systemd.services."zpool-import" =
     { description = "Import zpools";
       after = [ "systemd-udev-settle.service" ];
-      wantedBy = [ "multi-user.target" ]; 
       serviceConfig =
       { Type = "oneshot";
         RemainAfterExit = true;
         ExecStart = "${kernel.zfs}/sbin/zpool import -f -a -d /dev";
+      };
+    };
+
+    systemd.services."zfs-mount" =
+    { description = "Mount zfs volumes";
+      after = [ "zpool-import.service" ];
+      wantedBy = [ "local-fs.target" ];
+      serviceConfig =
+      { Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${kernel.zfs}/sbin/zfs mount -a";
+        ExecStop = "${kernel.zfs}/sbin/zfs umount -a";
       };
     };
 
