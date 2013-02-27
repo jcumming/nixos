@@ -61,7 +61,7 @@ in
         '';
     };
 
-    systemd.services."zpool-import"
+    systemd.services."zpool-import" = 
     { description = "Import zpools";
       after = [ "systemd-udev-settle.service" ];
       wantedBy = [ "multi-user.target" ]; 
