@@ -33,7 +33,7 @@ let
       pkgs.gst_all.gstPluginsGood
       pkgs.gst_all.gstPluginsUgly
       pkgs.gst_all.gstPluginsBad
-      pkgs.gst_all.gstFfmpeg # for mp3 playback
+      pkgs.gst_all.gstLibAV # for mp3 playback
       pkgs.gst_all.gstreamer # needed?
     ];
 
