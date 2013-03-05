@@ -10,6 +10,7 @@
   ./config/pulseaudio.nix
   ./config/shells.nix
   ./config/swap.nix
+  ./config/sysctl.nix
   ./config/system-path.nix
   ./config/timezone.nix
   ./config/unix-odbc-drivers.nix
@@ -178,6 +179,8 @@
   ./services/ttys/agetty.nix
   ./services/web-servers/apache-httpd/default.nix
   ./services/web-servers/jboss/default.nix
+  ./services/web-servers/lighttpd.nix
+  ./services/web-servers/nginx/default.nix
   ./services/web-servers/tomcat.nix
   ./services/x11/desktop-managers/default.nix
   ./services/x11/display-managers/auto.nix
