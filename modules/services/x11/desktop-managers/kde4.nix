@@ -29,12 +29,12 @@ let
   phononBackends = {
     gstreamer = [
       pkgs.phonon_backend_gstreamer
-      pkgs.gst_all.gstPluginsBase
-      pkgs.gst_all.gstPluginsGood
-      pkgs.gst_all.gstPluginsUgly
-      pkgs.gst_all.gstPluginsBad
-      pkgs.gst_all.gstFfmpeg # for mp3 playback
-      pkgs.gst_all.gstreamer # needed?
+      pkgs.gst_plugins_base_0_10  # as of 130305, phonon hasn't been updated to gstreamer-1.x, so we need to use the old gstreamer stuff for now. 
+      pkgs.gst_plugins_good_0_10
+      pkgs.gst_plugins_ugly_0_10
+      pkgs.gst_plugins_ugly_0_10
+      pkgs.gst_ffmpeg_0_10   # mp3 playback
+      pkgs.gstreamer_0_10    # needed?
     ];
 
     vlc = [pkgs.phonon_backend_vlc];
