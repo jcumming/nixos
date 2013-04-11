@@ -15,6 +15,8 @@ let virtualbox = config.boot.kernelPackages.virtualbox; in
     ''
       KERNEL=="vboxdrv",    OWNER="root", GROUP="vboxusers", MODE="0660", TAG+="systemd"
       KERNEL=="vboxnetctl", OWNER="root", GROUP="root",      MODE="0600", TAG+="systemd"
+      SUBSYSTEM=="usb_device", ATTR{devnum}=="?*", ATTR{busnum}=="?*",SYMLINK+="vboxusb/$attr{busnum}/$attr{devnum}", GROUP="vboxusers"
+      SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{devnum}=="?*", ATTR{busnum}=="?*",SYMLINK+="vboxusb/$attr{busnum}/$attr{devnum}", GROUP="vboxusers"
     '';
 
   # Since we lack the right setuid binaries, set up a host-only network by default.
