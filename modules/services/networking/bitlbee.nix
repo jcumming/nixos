@@ -30,10 +30,13 @@ let
 in
 
 {
+
   ###### interface
 
   options = {
+
     services.bitlbee = {
+
       enable = mkOption {
         default = false;
         description = ''
@@ -43,7 +46,6 @@ in
         '';
       };
 
-      };
       interface = mkOption {
         default = "127.0.0.1";
         description = ''
@@ -85,11 +87,8 @@ in
         ''; 
       };
 
-      extraCfg = mkOption {
-        default = "";
-        description = "Extra config to put in the [services] section of bitlbee.conf";
-      };
     };
+
   };
 
   ###### implementation
@@ -116,5 +115,9 @@ in
         serviceConfig.User = "bitlbee";
         serviceConfig.ExecStart = "${pkgs.bitlbee}/sbin/bitlbee -F -n -c ${bitlbeeConfig}";
       };
+
+    environment.systemPackages = [ pkgs.bitlbee ];
+
   };
+
 }
