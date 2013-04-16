@@ -4,19 +4,29 @@ with pkgs.lib;
 
 let
 
+  cfg = config.services.bitlbee;
   bitlbeeUid = config.ids.uids.bitlbee;
 
-  cfg = config.services.bitlbee;
+  authModeCheck = v:
+    v == "Open" ||
+    v == "Closed" ||
+    v == "Registered";
 
-  configFile = pkgs.writeText "bitlbee.conf" 
+  bitlbeeConfig = pkgs.writeText "bitlbee.conf"
     ''
-      [settings]
-      RunMode = ForkDaemon
-      User = bitlbee
-      DaemonInterface = ${cfg.interface}
-      DaemonPort = ${toString cfg.portNumber}
-      ${cfg.extraCfg}
+    [settings]
+    RunMode = Daemon
+    User = bitlbee  
+    ConfigDir = /var/lib/bitlbee      
+    DaemonInterface = ${cfg.interface}
+    DaemonPort = ${toString cfg.portNumber}
+    AuthMode = ${cfg.authMode}
+    ${cfg.extraSettings}
+
+    [defaults]
+    ${cfg.extraDefaults}
     '';
+
 in
 
 {
@@ -25,12 +35,13 @@ in
   options = {
     services.bitlbee = {
       enable = mkOption {
-      default = false;
-      description = ''
-        Whether to run the BitlBee IRC to other chat network gateway.
-        Running it allows you to access the MSN, Jabber, Yahoo! and ICQ chat
-        networks via an IRC client.
-      '';
+        default = false;
+        description = ''
+          Whether to run the BitlBee IRC to other chat network gateway.
+          Running it allows you to access the MSN, Jabber, Yahoo! and ICQ chat
+          networks via an IRC client.
+        '';
+      };
 
       };
       interface = mkOption {
@@ -44,7 +55,34 @@ in
 
       portNumber = mkOption {
         default = 6667;
-        description = "Number of the port BitlBee will be listening to.";
+        description = ''
+          Number of the port BitlBee will be listening to.
+        '';
+      };
+
+      authMode = mkOption {
+        default = "Open";
+        check = authModeCheck;
+        description = ''
+          The following authentication modes are available:
+            Open -- Accept connections from anyone, use NickServ for user authentication.
+            Closed -- Require authorization (using the PASS command during login) before allowing the user to connect at all.
+            Registered -- Only allow registered users to use this server; this disables the register- and the account command until the user identifies himself.
+        ''; 
+      };
+
+      extraSettings = mkOption {
+        default = "";
+        description = ''
+          Will be inserted in the Settings section of the config file.
+        ''; 
+      };
+
+      extraDefaults = mkOption {
+        default = "";
+        description = ''
+          Will be inserted in the Default section of the config file.
+        ''; 
       };
 
       extraCfg = mkOption {
@@ -54,30 +92,29 @@ in
     };
   };
 
-
   ###### implementation
 
   config = mkIf config.services.bitlbee.enable {
 
-    users.extraUsers = singleton { 
-      name = "bitlbee";
-      uid = bitlbeeUid;
-      description = "BitlBee user";
-      home = "/var/empty";
-    };
+    users.extraUsers = singleton
+      { name = "bitlbee";
+        uid = bitlbeeUid;
+        description = "BitlBee user";
+        home = "/var/lib/bitlbee";
+        createHome = true;
+      };
 
-    users.extraGroups = singleton { 
-      name = "bitlbee";
-      gid = config.ids.gids.bitlbee;
-    };
+    users.extraGroups = singleton
+      { name = "bitlbee";
+        gid = config.ids.gids.bitlbee;
+      };
 
-    systemd.services.bitlbee = { 
-      after = [ "network.target" ] ; 
-      description = "BitlBee IRC to other chat networks gateway";
-      wantedBy = [ "multi-user.target" ]; 
-      path = [ pkgs.bitlbee ]; 
-      preStart = " mkdir -p /var/lib/bitlbee && chown bitlbee:bitlbee /var/lib/bitlbee";
-      script = "exec bitlbee -c ${configFile} -v -n";
+    systemd.services.bitlbee = 
+      { description = "BitlBee IRC to other chat networks gateway";
+        after = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig.User = "bitlbee";
+        serviceConfig.ExecStart = "${pkgs.bitlbee}/sbin/bitlbee -F -n -c ${bitlbeeConfig}";
       };
   };
 }
