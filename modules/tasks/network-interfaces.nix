@@ -277,7 +277,7 @@ in
             script =
               ''
                 # Set the static DNS configuration, if given.
-                ${pkgs.openresolv}/sbin/resolvconf -a static <<EOF
+                ${pkgs.openresolv}/sbin/resolvconf -m 1 -a static <<EOF
                 ${optionalString (cfg.nameservers != [] && cfg.domain != "") ''
                   domain ${cfg.domain}
                 ''}
@@ -371,7 +371,8 @@ in
           { description = "Virtual Network Interface ${i.name}";
             requires = [ "dev-net-tun.device" ];
             after = [ "dev-net-tun.device" ];
-            wantedBy = [ "network.target" "sys-subsystem-net-devices-${i.name}.device" ];
+            wantedBy = [ "network.target" ];
+            requiredBy = [ "sys-subsystem-net-devices-${i.name}.device" ];
             serviceConfig =
               { Type = "oneshot";
                 RemainAfterExit = true;
