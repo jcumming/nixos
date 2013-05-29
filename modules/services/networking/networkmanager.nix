@@ -89,10 +89,12 @@ in {
       { source = configFile;
         target = "NetworkManager/NetworkManager.conf";
       }
-      ##### Just temporary change, old nixpkgs base
+      { source = "${networkmanager_openvpn}/etc/NetworkManager/VPN/nm-openvpn-service.name";
+        target = "NetworkManager/VPN/nm-openvpn-service.name";
+      }
     ];
 
-    environment.systemPackages = cfg.packages;
+    environment.systemPackages = cfg.packages ++ [ networkmanager_openvpn ];
 
     users.extraGroups = singleton {
       name = "networkmanager";
@@ -132,7 +134,7 @@ in {
     security.polkit.permissions = polkitConf;
 
     # openvpn plugin has only dbus interface
-    services.dbus.packages = cfg.packages;
+    services.dbus.packages = cfg.packages ++ [ networkmanager_openvpn ];
 
     services.udev.packages = cfg.packages;
   };
