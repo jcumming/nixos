@@ -69,6 +69,7 @@ in
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
+        restartIfChanged = false;
         ExecStart = "${kernel.zfs}/sbin/zpool import -f -a -d /dev";
       };
     };
