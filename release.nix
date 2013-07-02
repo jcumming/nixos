@@ -13,6 +13,10 @@ let
   pkgs = import <nixpkgs> { system = "x86_64-linux"; };
 
 
+  versionModule =
+    { system.nixosVersionSuffix = pkgs.lib.optionalString (!officialRelease) versionSuffix;  };
+
+
   makeIso =
     { module, type, description ? type, maintainers ? ["eelco"], system }:
 
@@ -20,14 +24,9 @@ let
 
     let
 
-      versionModule =
-        { system.nixosVersionSuffix = lib.optionalString (!officialRelease) versionSuffix;
-          isoImage.isoBaseName = "nixos-${type}";
-        };
-
       config = (import lib/eval-config.nix {
         inherit system;
-        modules = [ module versionModule ];
+        modules = [ module versionModule { isoImage.isoBaseName = "nixos-${type}"; } ];
       }).config;
 
       iso = config.system.build.isoImage;
@@ -43,7 +42,7 @@ let
           passthru = { inherit config; };
         }
         ''
-          ensureDir $out/nix-support
+          mkdir -p $out/nix-support
           echo "file iso" $iso/iso/*.iso* >> $out/nix-support/hydra-build-products
         ''; # */
 
@@ -54,7 +53,6 @@ let
     with import <nixpkgs> { inherit system; };
 
     let
-      versionModule = { system.nixosVersionSuffix = lib.optionalString (!officialRelease) versionSuffix; };
 
       config = (import lib/eval-config.nix {
         inherit system;
@@ -62,6 +60,7 @@ let
       }).config;
 
       tarball = config.system.build.tarball;
+
     in
       tarball //
         { meta = {
@@ -86,7 +85,7 @@ in {
       distPhase = ''
         echo -n $VERSION_SUFFIX > .version-suffix
         releaseName=nixos-$VERSION$VERSION_SUFFIX
-        ensureDir "$out/tarballs"
+        mkdir -p $out/tarballs
         mkdir ../$releaseName
         cp -prd . ../$releaseName
         cd ..
@@ -112,7 +111,7 @@ in {
       distPhase = ''
         echo -n $VERSION_SUFFIX > .version-suffix
         releaseName=nixos-$VERSION$VERSION_SUFFIX
-        ensureDir "$out/tarballs"
+        mkdir -p $out/tarballs
         mkdir ../$releaseName
         cp -prd . ../$releaseName/nixos
         cp -prd ${nixpkgs} ../$releaseName/nixpkgs
@@ -175,6 +174,39 @@ in {
   });
 
 
+  # A bootable VirtualBox image.  FIXME: generate a OVF appliance?
+  vdi.x86_64-linux =
+    with import <nixpkgs> { system = "x86_64-linux"; };
+
+    let
+
+      config = (import lib/eval-config.nix {
+        inherit system;
+        modules =
+          [ versionModule
+            ./modules/virtualisation/virtualbox-image.nix
+            ./modules/installer/cd-dvd/channel.nix
+            ./modules/profiles/demo.nix
+          ];
+      }).config;
+
+    in
+      # Declare the VDI as a build product so that it shows up in Hydra.
+      runCommand "nixos-vdi-${config.system.nixosVersion}"
+        { meta = {
+            description = "NixOS VirtualBox disk image (64-bit)";
+            maintainers = lib.maintainers.eelco;
+          };
+          vdi = config.system.build.virtualBoxImage;
+        }
+        ''
+          mkdir -p $out/nix-support
+          fn=$out/nixos-${config.system.nixosVersion}.vdi.xz
+          xz < $vdi/*.vdi > $fn
+          echo "file vdi $fn" >> $out/nix-support/hydra-build-products
+        ''; # */
+
+
   # Provide a tarball that can be unpacked into an SD card, and easily
   # boot that system from uboot (like for the sheevaplug).
   # The pc variant helps preparing the expression for the system tarball
@@ -220,6 +252,7 @@ in {
       ipv6 = runTest (t: t.ipv6.test);
       kde4 = runTest (t: t.kde4.test);
       login = runTest (t: t.login.test);
+      latestKernel.login = runTest (t: t.latestKernel.login.test);
       misc = runTest (t: t.misc.test);
       mpich = runTest (t: t.mpich.test);
       mysql = runTest (t: t.mysql.test);
