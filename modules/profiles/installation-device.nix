@@ -39,11 +39,9 @@ with pkgs.lib;
             "Type `start display-manager' to\nstart the graphical user interface."}
       '';
 
-    # Allow sshd to be started manually through "start sshd".  It should
-    # not be started by default on the installation CD because the
-    # default root password is empty.
+    # Allow sshd to be started manually through "start sshd".
     services.openssh.enable = true;
-    jobs.sshd.startOn = pkgs.lib.mkOverride 50 "";
+    systemd.services.sshd.wantedBy = mkOverride 50 [];
 
     # Enable wpa_supplicant, but don't start it by default.
     networking.wireless.enable = true;
