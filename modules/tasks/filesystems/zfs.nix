@@ -87,7 +87,7 @@ in
       };
     };
 
-    system.fsPackages = [ kernel.zfs ];                  # XXX: needed? zfs doesn't have a fsck
+    system.fsPackages = [ kernel.zfs ];                  # XXX: needed? zfs doesn't have (need) a fsck
     environment.systemPackages = [ kernel.zfs ];
     services.udev.packages = [ kernel.zfs ];             # to hook zvol naming, etc. 
   };
