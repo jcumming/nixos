@@ -561,9 +561,11 @@ in
         [Sleep]
       '';
 
-    system.activationScripts.systemd =
+    system.activationScripts.systemd = stringAfter [ "groups" ]
       ''
-        mkdir -p /var/lib/udev -m 0755
+        mkdir -m 0755 -p /var/lib/udev
+        mkdir -p /var/log/journal
+        chmod 0755 /var/log/journal
 
         # Regenerate the hardware database /var/lib/udev/hwdb.bin
         # whenever systemd changes.
@@ -571,6 +573,11 @@ in
           echo "regenerating udev hardware database..."
           ${systemd}/bin/udevadm hwdb --update && ln -sfn ${systemd} /var/lib/udev/prev-systemd
         fi
+
+        # Make all journals readable to users in the wheel and adm
+        # groups, in addition to those in the systemd-journal group.
+        # Users can always read their own journals.
+        ${pkgs.acl}/bin/setfacl -nm g:wheel:rx,d:g:wheel:rx,g:adm:rx,d:g:adm:rx /var/log/journal
       '';
 
     # Target for ‘charon send-keys’ to hook into.
@@ -597,6 +604,8 @@ in
         restart = "systemctl restart";
         status = "systemctl status";
       };
+
+    users.extraGroups.systemd-journal.gid = config.ids.gids.systemd-journal;
 
   };
 }
