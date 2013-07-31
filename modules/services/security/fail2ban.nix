@@ -98,26 +98,24 @@ in
         }
       ];
 
+    system.activationScripts.fail2ban =
+      ''
+        mkdir -p /var/run/fail2ban -m 0755
+      '';
+
     systemd.services.fail2ban =
       { description = "Fail2ban intrusion prevention system";
 
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
       
+        restartTriggers = [ fail2banConf jailConf ];
         path = [ pkgs.fail2ban pkgs.iptables ];
         
-        preStart =
-          ''
-            # FIXME: this won't detect changes to
-            # /etc/fail2ban/{filter.d,action.d}.
-            # ${fail2banConf} ${jailConf}
-            mkdir -p /var/run/fail2ban -m 0755
-          '';
-          
         serviceConfig =
           { ExecStart = "${pkgs.fail2ban}/bin/fail2ban-server -f";
             ReadOnlyDirectories = "/";
-            ReadWriteDirectories = "/var/run/fail2ban";
+            ReadWriteDirectories = "/var/run/fail2ban /var/tmp";
             CapabilityBoundingSet="CAP_DAC_READ_SEARCH CAP_NET_ADMIN CAP_NET_RAW";
           };
 
