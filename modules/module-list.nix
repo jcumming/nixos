@@ -154,6 +154,7 @@
   ./services/networking/gvpe.nix
   ./services/networking/hostapd.nix
   ./services/networking/ifplugd.nix
+  ./services/networking/iodined.nix
   ./services/networking/ircd-hybrid/default.nix
   ./services/networking/minidlna.nix
   ./services/networking/nat.nix
@@ -170,6 +171,7 @@
   ./services/networking/rdnssd.nix
   ./services/networking/rpcbind.nix
   ./services/networking/sabnzbd.nix
+  ./services/networking/supybot.nix
   ./services/networking/ssh/lshd.nix
   ./services/networking/ssh/sshd.nix
   ./services/networking/tftpd.nix
@@ -217,7 +219,7 @@
   ./services/x11/hardware/synaptics.nix
   ./services/x11/hardware/wacom.nix
   ./services/x11/window-managers/awesome.nix
-  ./services/x11/window-managers/compiz.nix
+  #./services/x11/window-managers/compiz.nix
   ./services/x11/window-managers/default.nix
   ./services/x11/window-managers/icewm.nix
   ./services/x11/window-managers/kwm.nix
