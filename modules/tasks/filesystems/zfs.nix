@@ -52,10 +52,20 @@ in
       kernelModules = [ "spl" "zfs" ] ;
       extraUtilsCommands =
         ''
-          cp -v ${kernel.zfs}/sbin/zfs $out/sbin
-          cp -v ${kernel.zfs}/sbin/zdb $out/sbin
-          cp -v ${kernel.zfs}/sbin/zpool $out/sbin
+          cp -v ${kernel.zfs}/bin/zfs $out/sbin
+          cp -v ${kernel.zfs}/bin/zdb $out/sbin
+          cp -v ${kernel.zfs}/bin/zpool $out/sbin
+          cp -pdv ${kernel.zfs}/lib/lib*.so.* $out/lib
+          cp -pdv ${pkgs.zlib}/lib/lib*.so.* $out/lib
         '';
+
+      extraUtilsCommandsTest = 
+        ''
+          zfs -?
+          zpool -?
+          zdb -?
+        '';
+
       postDeviceCommands =
         ''
           zpool import -f -a -d /dev
