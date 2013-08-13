@@ -58,14 +58,6 @@ in
           cp -pdv ${kernel.zfs}/lib/lib*.so.* $out/lib
           cp -pdv ${pkgs.zlib}/lib/lib*.so.* $out/lib
         '';
-
-      extraUtilsCommandsTest = 
-        ''
-          zfs -?
-          zpool -?
-          zdb -?
-        '';
-
       postDeviceCommands =
         ''
           zpool import -f -a -d /dev
