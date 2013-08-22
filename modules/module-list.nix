@@ -121,9 +121,11 @@
   ./services/misc/synergy.nix
   ./services/monitoring/apcupsd.nix
   ./services/monitoring/dd-agent.nix
+  ./services/monitoring/graphite.nix
   ./services/monitoring/monit.nix
   ./services/monitoring/nagios/default.nix
   ./services/monitoring/smartd.nix
+  ./services/monitoring/statsd.nix
   ./services/monitoring/systemhealth.nix
   ./services/monitoring/ups.nix
   ./services/monitoring/uptime.nix
