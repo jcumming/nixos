@@ -84,12 +84,33 @@ $ lvcreate --size 1G --name smalldisk MyVolGroup</screen>
     <listitem><para>For creating software RAID devices, use
     <command>mdadm</command>.</para></listitem>
 
+    <listitem><para>For creating ZFS pools, the zfs commands, e.g.,
+
+<screen>
+$ zpool create zroot /dev/sda2 .... 
+$ zfs create zroot/root </screen>
+
+    </para></listitem>
+  
   </itemizedlist>
 
   </para></listitem>
 
   <listitem><para>Mount the target file system on which NixOS should
-  be installed on <filename>/mnt</filename>.</para></listitem>
+  be installed on <filename>/mnt</filename>.</para>
+  
+    <itemizedlist>
+      <listitem><para> If you're using a ZFS root, then you'll need to mark it as a legacy mount for the NixOS initrd to properly mount it. 
+      ZFS root also requires requires a separate <filename>/boot</filename> partition. 
+<screen>
+$ zfs set mountpoint=legacy zroot/root
+$ mount -t zfs zroot/root /mnt
+$ mkfs.ext3 -L boot /dev/sda1
+$ mkdir /mnt/boot
+$ mount LABEL=boot /mnt/boot </screen>
+    </para></listitem>
+    </itemizedlist>
+  </listitem>
 
   <listitem>
 
