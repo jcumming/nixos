@@ -50,27 +50,31 @@ in
 
     boot.initrd = mkIf inInitrd { 
       kernelModules = [ "spl" "zfs" ] ;
+      # zfs uses libs from:  zfs, glibc, utillinux, zlib, gcc and glibc. 
+      # stage-1.nix provides:     glibc  utlilinux        gcc and glibc 
       extraUtilsCommands =
         ''
-          cp -v ${kernel.zfs}/sbin/zfs $out/sbin
-          cp -v ${kernel.zfs}/sbin/zdb $out/sbin
-          cp -v ${kernel.zfs}/sbin/zpool $out/sbin
+          cp -v ${kernel.zfs}/sbin/zfs $out/bin
+          cp -v ${kernel.zfs}/sbin/zdb $out/bin
+          cp -v ${kernel.zfs}/sbin/zpool $out/bin
+          cp -pdv ${kernel.zfs}/lib/lib*.so.* $out/lib
+          cp -pdv ${pkgs.zlib}/lib/lib*.so.* $out/lib
         '';
       postDeviceCommands =
         ''
           zpool import -f -a -d /dev
-          zfs mount -a
         '';
     };
 
-    systemd.services."zpool-import" = {
+    systemd.services."zpool-import" = mkIf inSystem {
       description = "Import zpools";
       after = [ "systemd-udev-settle.service" ];
+      wantedBy = [ "local-fs.target" ];
+      restartIfChanged = false;
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        restartIfChanged = false;
-        ExecStart = "${kernel.zfs}/sbin/zpool import -f -a -d /dev";
+        ExecStart = "-${kernel.zfs}/sbin/zpool import -d /dev -f -a";     # XXX: allow failure?
       };
     };
 
@@ -78,12 +82,12 @@ in
       description = "Mount zfs volumes";
       after = [ "zpool-import.service" ];
       wantedBy = [ "local-fs.target" ];
+      restartIfChanged = false;
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        restartIfChanged = false;
-        ExecStart = "${kernel.zfs}/sbin/zfs mount -a";
-        ExecStop = "${kernel.zfs}/sbin/zfs umount -a";
+        ExecStart = "-${kernel.zfs}/sbin/zfs mount -a";  # XXX: allow failure?
+        ExecStop = "-${kernel.zfs}/sbin/zfs umount -a";  # XXX: allow failure?
       };
     };
 
