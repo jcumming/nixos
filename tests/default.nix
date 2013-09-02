@@ -29,4 +29,5 @@ with import ../lib/testing.nix { inherit system minimal; };
   tomcat = makeTest (import ./tomcat.nix);
   trac = makeTest (import ./trac.nix);
   xfce = makeTest (import ./xfce.nix);
+  ztest = makeTest (import ./ztest.nix);
 }

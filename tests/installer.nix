@@ -57,6 +57,12 @@ let
       }
     '';
 
+  zRootFS =
+    ''
+      fileSystems."/".device = "zroot/root";
+      fileSystems."/".fsType = "zfs";
+    '';
+
   rootFS =
     ''
       fileSystems."/".device = "/dev/disk/by-label/nixos";
@@ -299,6 +305,32 @@ in {
           );
         '';
       fileSystems = rootFS + bootFS;
+    };
+
+  # separate boot/zfs root partition
+  zroot = makeTest
+    { createPartitions =
+        ''
+          $machine->succeed(
+              "parted /dev/vda mklabel msdos",
+              "parted /dev/vda -- mkpart primary 1M 50MB", # /boot
+              "parted /dev/vda -- mkpart primary 50MB 2048M",
+              "udevadm settle",
+              "zpool create zroot /dev/vda2",         # start a pool 
+              "zfs create zroot/root",                # create root
+              "zfs set mountpoint=legacy zroot/root", # mount this fs with 'mount' instead of 'zfs mount'
+              "zfs set compression=lz4 zroot/root",   # compress things a bit, so we don't run out of space. 
+              "mount -t zfs zroot/root /mnt",          
+              "zfs create -V 512M -b 4K zroot/swap",  # create a swap zvol
+              "mkswap -L swap /dev/zvol/zroot/swap",  
+              "swapon -L swap",
+              "mkfs.ext3 -L boot /dev/vda1",          # separate boot partition
+              "mkdir /mnt/boot",
+              "mount LABEL=boot /mnt/boot",
+              "udevadm settle",
+          );
+        '';
+      fileSystems = zRootFS + bootFS;
     };
 
   # Test a basic install using GRUB 1.
