@@ -199,11 +199,11 @@ let
           -virtfs local,path=$TMPDIR/xchg,security_model=none,mount_tag=xchg \
           -virtfs local,path=''${SHARED_DIR:-$TMPDIR/xchg},security_model=none,mount_tag=shared \
           ${if cfg.useBootLoader then ''
-            -drive index=0,id=drive1,file=$NIX_DISK_IMAGE,if=virtio,cache=writeback,werror=report \
+            -drive index=0,id=drive1,file=$NIX_DISK_IMAGE,if=virtio,cache=writethrough,werror=report \
             -drive index=1,id=drive2,file=${bootDisk}/disk.img,if=virtio,readonly \
             -boot menu=on
           '' else ''
-            -drive file=$NIX_DISK_IMAGE,if=virtio,cache=writeback,werror=report \
+            -drive file=$NIX_DISK_IMAGE,if=virtio,cache=writethrough,werror=report \
             -kernel ${config.system.build.toplevel}/kernel \
             -initrd ${config.system.build.toplevel}/initrd \
             -append "$(cat ${config.system.build.toplevel}/kernel-params) init=${config.system.build.toplevel}/init regInfo=${regInfo} ${kernelConsole} $QEMU_KERNEL_PARAMS" \
