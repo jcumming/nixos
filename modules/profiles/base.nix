@@ -50,6 +50,6 @@
   ];
 
   # Include support for various filesystems.
-  boot.supportedFilesystems = [ "btrfs" "reiserfs" "vfat" ];
+  boot.supportedFilesystems = [ "btrfs" "reiserfs" "vfat" "zfs" ];
 
 }
