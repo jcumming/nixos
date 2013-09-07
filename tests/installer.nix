@@ -59,6 +59,7 @@ let
 
   zRootFS =
     ''
+      boot.initrd.supportedFilesystems = [ "ext3" "zfs" ];
       fileSystems."/".device = "zroot/root";
       fileSystems."/".fsType = "zfs";
     '';
@@ -316,12 +317,15 @@ in {
               "parted /dev/vda -- mkpart primary 1M 50MB", # /boot
               "parted /dev/vda -- mkpart primary 50MB 2048M",
               "udevadm settle",
-              "zpool create zroot /dev/vda2",         # start a pool 
-              "zfs create zroot/root",                # create root
-              "zfs set mountpoint=legacy zroot/root", # mount this fs with 'mount' instead of 'zfs mount'
-              "zfs set compression=lz4 zroot/root",   # compress things a bit, so we don't run out of space. 
-              "mount -t zfs zroot/root /mnt",          
-              "zfs create -V 512M -b 4K zroot/swap",  # create a swap zvol
+              "zpool create zroot /dev/vda2",             # start a pool 
+              "zfs create zroot/root",                    # create root
+              "zfs set mountpoint=legacy zroot/root",     # mount this fs with 'mount' instead of 'zfs mount'
+              "zfs set compression=lz4 zroot/root",       # compress things a bit, so we don't run out of space. 
+              "mount -t zfs zroot/root /mnt",              
+              "zfs create -V 1G -b 4K zroot/swap",        # create a swap zvol
+              "zfs set compression=off zroot/swap",       # don't compress swap
+              "zfs set primarycache=metadata zroot/swap", # only cache metadata
+              "zfs set sync=always zroot/swap",
               "mkswap -L swap /dev/zvol/zroot/swap",  
               "swapon -L swap",
               "mkfs.ext3 -L boot /dev/vda1",          # separate boot partition
