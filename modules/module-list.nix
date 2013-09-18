@@ -133,6 +133,7 @@
   ./services/monitoring/zabbix-server.nix
   ./services/network-filesystems/drbd.nix
   ./services/network-filesystems/nfsd.nix
+  ./services/network-filesystems/netatalk.nix
   ./services/network-filesystems/openafs-client/default.nix
   ./services/network-filesystems/samba.nix
   ./services/networking/amuled.nix
@@ -191,7 +192,7 @@
   ./services/scheduling/fcron.nix
   ./services/search/elasticsearch.nix
   ./services/security/clamav.nix
-  ./services/security/fail2ban.nix
+  #./services/security/fail2ban.nix
   ./services/security/fprot.nix
   ./services/security/frandom.nix
   ./services/security/tor.nix
