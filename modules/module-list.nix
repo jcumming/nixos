@@ -13,7 +13,7 @@
   ./config/nsswitch.nix
   ./config/power-management.nix
   ./config/pulseaudio.nix
-  ./config/shells.nix
+  ./config/shells-environment.nix
   ./config/swap.nix
   ./config/sysctl.nix
   ./config/system-path.nix
@@ -45,6 +45,7 @@
   ./programs/bash/bash.nix
   ./programs/bash/command-not-found.nix
   ./programs/blcr.nix
+  ./programs/environment.nix
   ./programs/info.nix
   ./programs/shadow.nix
   ./programs/shell.nix
@@ -52,6 +53,7 @@
   ./programs/ssmtp.nix
   ./programs/venus.nix
   ./programs/wvdial.nix
+  ./programs/zsh/zsh.nix
   ./rename.nix
   ./security/apparmor.nix
   ./security/apparmor-suid.nix
@@ -167,7 +169,6 @@
   ./services/networking/oidentd.nix
   ./services/networking/openfire.nix
   ./services/networking/openvpn.nix
-  ./services/networking/portmap.nix
   ./services/networking/prayer.nix
   ./services/networking/privoxy.nix
   ./services/networking/quassel.nix
@@ -269,7 +270,6 @@
   ./tasks/network-interfaces.nix
   ./tasks/scsi-link-power-management.nix
   ./tasks/swraid.nix
-  ./tasks/tty-backgrounds.nix
   ./virtualisation/libvirtd.nix
   ./virtualisation/nova.nix
   ./virtualisation/virtualbox-guest.nix
