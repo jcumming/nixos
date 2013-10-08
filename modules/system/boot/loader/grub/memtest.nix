@@ -23,7 +23,7 @@ in
 
   config = mkIf config.boot.loader.grub.memtest86 {
 
-    boot.loader.grub.extraEntries =
+    boot.loader.grub.extraEntries = mkFixStrictness (
       if config.boot.loader.grub.version == 2 then
         ''
           menuentry "Memtest86+" {
@@ -31,10 +31,7 @@ in
           }
         ''
       else
-        ''
-          menuentry "Memtest86+"
-            linux16 @bootRoot@/memtest.bin
-        '';
+        throw "Memtest86+ is not supported with GRUB 1.");
 
     boot.loader.grub.extraFiles."memtest.bin" = "${memtest86}/memtest.bin";
 

@@ -45,24 +45,27 @@ in
 
       enable = mkOption {
         default = true;
+        type = types.bool;
         description = ''
           Whether to enable the GNU GRUB boot loader.
         '';
       };
 
       version = mkOption {
-        default = 1;
-        example = 2;
+        default = 2;
+        example = 1;
+        type = types.int;
         description = ''
-          The version of GRUB to use: <literal>1</literal> for GRUB Legacy
-          (versions 0.9x), or <literal>2</literal> for GRUB 2.
+          The version of GRUB to use: <literal>1</literal> for GRUB
+          Legacy (versions 0.9x), or <literal>2</literal> (the
+          default) for GRUB 2.
         '';
       };
 
       device = mkOption {
         default = "";
         example = "/dev/hda";
-        type = with pkgs.lib.types; uniq string;
+        type = types.uniq types.string;
         description = ''
           The device on which the GRUB boot loader will be installed.
           The special value <literal>nodev</literal> means that a GRUB
@@ -75,7 +78,7 @@ in
       devices = mkOption {
         default = [];
         example = [ "/dev/hda" ];
-        type = with pkgs.lib.types; listOf string;
+        type = types.listOf types.string;
         description = ''
           The devices on which the boot loader, GRUB, will be
           installed. Can be used instead of <literal>device</literal> to
@@ -92,6 +95,7 @@ in
       configurationName = mkOption {
         default = "";
         example = "Stable 2.6.21";
+        type = types.uniq types.string;
         description = ''
           GRUB entry name instead of default.
         '';
@@ -99,6 +103,7 @@ in
 
       extraPrepareConfig = mkOption {
         default = "";
+        type = types.lines;
         description = ''
           Additional bash commands to be run at the script that
           prepares the grub menu entries.
@@ -108,6 +113,7 @@ in
       extraConfig = mkOption {
         default = "";
         example = "serial; terminal_output.serial";
+        type = types.lines;
         description = ''
           Additional GRUB commands inserted in the configuration file
           just before the menu entries.
@@ -117,6 +123,7 @@ in
       extraPerEntryConfig = mkOption {
         default = "";
         example = "root (hd0)";
+        type = types.lines;
         description = ''
           Additional GRUB commands inserted in the configuration file
           at the start of each NixOS menu entry.
@@ -125,6 +132,7 @@ in
 
       extraEntries = mkOption {
         default = "";
+        type = types.lines;
         example = ''
           # GRUB 1 example (not GRUB 2 compatible)
           title Windows
@@ -145,6 +153,7 @@ in
 
       extraEntriesBeforeNixOS = mkOption {
         default = false;
+        type = types.bool;
         description = ''
           Whether extraEntries are included before the default option.
         '';
@@ -184,6 +193,7 @@ in
       configurationLimit = mkOption {
         default = 100;
         example = 120;
+        type = types.int;
         description = ''
           Maximum of configurations in boot menu. GRUB has problems when
           there are too many entries.
@@ -192,6 +202,7 @@ in
 
       copyKernels = mkOption {
         default = false;
+        type = types.bool;
         description = ''
           Whether the GRUB menu builder should copy kernels and initial
           ramdisks to /boot.  This is done automatically if /boot is
@@ -201,6 +212,7 @@ in
 
       timeout = mkOption {
         default = 5;
+        type = types.int;
         description = ''
           Timeout (in seconds) until GRUB boots the default menu item.
         '';
@@ -208,6 +220,7 @@ in
 
       default = mkOption {
         default = 0;
+        type = types.int;
         description = ''
           Index of the default menu item to be booted.
         '';
