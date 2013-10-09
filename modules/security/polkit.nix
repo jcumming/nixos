@@ -68,6 +68,8 @@ in
 
     environment.systemPackages = [ pkgs.polkit ];
 
+    systemd.packages = [ pkgs.polkit ];
+
     # The polkit daemon reads action files
     environment.pathsToLink = [ "/share/polkit-1/actions" ];
 
